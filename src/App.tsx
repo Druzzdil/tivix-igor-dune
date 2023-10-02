@@ -1,26 +1,27 @@
+import { QueryClient, QueryClientProvider } from 'react-query';
 import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import Modal from 'react-modal';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import StyledHomePage from './Pages/StyledHomePage/StyledHomePage';
+import DrawResultPage from './Pages/DrawingResultPage/DrawingResultPage';
+import ShippingDetailsPage from './Pages/ShippingPage/ShippingPage';
+
+const queryClient = new QueryClient();
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+    return (
+        <div className="layout">
+            <QueryClientProvider client={queryClient}>
+                <Router>
+                    <Routes>
+                        <Route path="/" element={<StyledHomePage />} />
+                        <Route path="/draw-result" element={<DrawResultPage />} />
+                        <Route path="/shipping" element={<ShippingDetailsPage />} />
+                    </Routes>
+                </Router>
+            </QueryClientProvider>
+        </div>
+    );
 }
 
 export default App;
