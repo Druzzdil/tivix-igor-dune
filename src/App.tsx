@@ -1,6 +1,5 @@
 import { QueryClient, QueryClientProvider } from 'react-query';
 import React from 'react';
-import Modal from 'react-modal';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import StyledHomePage from './Pages/StyledHomePage/StyledHomePage';
 import DrawResultPage from './Pages/DrawingResultPage/DrawingResultPage';

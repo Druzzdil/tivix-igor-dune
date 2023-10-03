@@ -6,13 +6,11 @@ import { useQuery } from 'react-query';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
-
-const API_URL = 'https://rebrickable.com/api/v3/lego/minifigs?';
-const API_KEY = 'f419b66f32b458cdf55d5e17e3bdb901';
+import {API_KEY, API_URL} from '../../constants/constants';
 
 const fetchMinifigs = () =>
     fetch(
-        `${API_URL}${new URLSearchParams({ search: 'Harry Potter' })}`,
+        `${API_URL}/api/v3/lego/minifigs?${new URLSearchParams({ search: 'Hogwarts' })}`,
         {
             headers: { Authorization: `key ${API_KEY}` },
         }
@@ -37,7 +35,11 @@ const Title = styled.h1`
 const MinifigTile = styled.div<MinifigTileProps>`
   position: relative;
   width: 250px;
+  border: ${({ isSelected }) => (isSelected ? '3px solid darkorange' : 'none')};
+  border-radius: ${({ isSelected }) => (isSelected ? '16px' : '0')};
+  box-sizing: border-box;
 `;
+
 
 const MinifigGrid = styled.div`
   display: flex;
@@ -46,14 +48,9 @@ const MinifigGrid = styled.div`
 `;
 
 const MinifigImage = styled.img`
-  width: 250px;
+  width: 100%;
   height: 250px;
   border-radius: 16px;
-  &:hover {
-    opacity: 0.7;
-    border: 3px solid darkorange;
-    cursor: pointer;
-  }
 `;
 
 const ProceedButton = styled.button`
@@ -72,9 +69,15 @@ const ProceedButton = styled.button`
   }
 `;
 
+const StatueName = styled.h2`
+  text-align: center;
+  font-size:16px;
+`
+
 const Details = styled.h2`
-    position: relative;
+    position: absolute;
     bottom: 10px;
+    margin-left: 60px;
     color: darkorange;
     border: none;
     border-radius: 8px;
@@ -86,18 +89,18 @@ const Details = styled.h2`
     }
   font-size: 18px;
   text-align: center;
-  margin: 0 auto;
 `;
 
 const WrapperContainer = styled.div`
   background: white;
-  height: 350px;
+  height: 380px;
   border-radius: 16px;
 `
 
 type Minifig = {
     set_num: string;
     set_img_url: string;
+    set_url: string;
     name: string;
 };
 
@@ -113,7 +116,6 @@ const DrawResultPage = () => {
     const [modalIsOpen, setModalIsOpen] = useState(false);
     const [selectedMinifig, setSelectedMinifig] = useState<Minifig | null>(null);
 
-    console.log(modalIsOpen, 'modalIsOpen')
     useEffect(() => {
         if (data) {
             const tempDrawnMinifigs: Minifig[] = [];
@@ -134,15 +136,18 @@ const DrawResultPage = () => {
         setModalIsOpen(true);
     }, []);
 
-    const handleProceed = () => {
-        if (selectedMinifigID) {
-            navigate(`/shipping?selectedMinifig=${selectedMinifigID}`);
+    const handleProceed = useCallback(() => {
+        console.log(selectedMinifigID, 'selectedMinifigID');
+        const minifigDetails = drawnMinifigs.find(minifig => minifig.set_num === selectedMinifigID);
+        console.log(minifigDetails, 'minifigDetails')
+        if (minifigDetails) {
+            navigate(`/shipping?selectedMinifig=${selectedMinifigID}&setURL=${encodeURIComponent(minifigDetails.set_url)}`);
         }
-    };
+    }, [navigate, selectedMinifigID, drawnMinifigs]);
 
-    const handleSelect = (minifig: Minifig) => {
+    const handleSelect = useCallback((minifig: Minifig) => {
         setSelectedMinifigID(minifig.set_num);
-    };
+    } , [setSelectedMinifigID]);
 
     const closeModal = useCallback(() => {
         setSelectedMinifig(null);
@@ -164,6 +169,7 @@ const DrawResultPage = () => {
                     >
                         <WrapperContainer>
                             <MinifigImage src={minifig.set_img_url} alt={minifig.name} />
+                            <StatueName>{minifig.name}</StatueName>
                             <Details onClick={(e) => { e.stopPropagation(); openModal(minifig); }}>
                                 Show Details
                             </Details>
