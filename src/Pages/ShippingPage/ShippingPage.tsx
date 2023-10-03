@@ -2,7 +2,6 @@ import React from 'react';
 import styled, { css } from 'styled-components';
 import { useLocation } from 'react-router-dom';
 import { useQuery } from 'react-query';
-import {Alert, Modal, Button} from 'react-bootstrap'
 import useShippingFormik from './hooks/useInitialValues';
 import { API_KEY, API_URL } from '../../constants/constants';
 import MinifigDetails from './components/MinifigDetails/MinifigDetails'
@@ -83,8 +82,6 @@ const HalfInput = styled(Input)<InputProps>`
 
 const ShippingDetailsPage = () => {
     const formik = useShippingFormik();
-    const [isModalOpen, setModalOpen] = React.useState(false);
-    const [formStatus, setFormStatus] = React.useState({ success: false, error: null });
     const location = useLocation();
     const queryParams = new URLSearchParams(location.search);
     const selectedMinifig = queryParams.get('selectedMinifig');
@@ -95,7 +92,7 @@ const ShippingDetailsPage = () => {
         })
             .then(res => res.json());
 
-    const { data: minifigData, isLoading: isMinifigLoading, error: minifigError } = useQuery(
+    const { data: minifigData } = useQuery(
         ['minifigData', selectedMinifig],
         () => fetchMinifig(selectedMinifig),
         {
@@ -117,49 +114,9 @@ const ShippingDetailsPage = () => {
         }
     );
 
-    const handleSubmitForm = async (values: any) => {
-        try {
-            const response = await fetch('https://api.example.com/shipping', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(values),
-            });
-
-            if (!response.ok) {
-                const data = await response.json();
-                throw new Error(data.message || 'Something went wrong!');
-            }
-
-            setFormStatus({ success: true, error: null });
-            setModalOpen(true);
-        } catch (error) {
-            setFormStatus({ success: false, error: error.message });
-        }
-    };
-
     return (
         <PageContainer>
             <FormContainer>
-                {isModalOpen && (
-                    <Modal show={isModalOpen} onHide={() => setModalOpen(false)}>
-                        <Modal.Header closeButton>
-                            <Modal.Title>Success</Modal.Title>
-                        </Modal.Header>
-                        <Modal.Body>Your details have been submitted successfully.</Modal.Body>
-                        <Modal.Footer>
-                            <Button variant="secondary" onClick={() => setModalOpen(false)}>
-                                Close
-                            </Button>
-                        </Modal.Footer>
-                    </Modal>
-                )}
-                {formStatus.error && (
-                    <Alert variant="danger" onClose={() => setFormStatus((prev) => ({ ...prev, error: null }))} dismissible>
-                        {formStatus.error}
-                    </Alert>
-                )}
                 <FormTitle>SHIPPING DETAILS</FormTitle>
                 <FormAndDetailsContainer>
                     <FormWrapper>

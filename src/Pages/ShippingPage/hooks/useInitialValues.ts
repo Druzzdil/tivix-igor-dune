@@ -1,5 +1,4 @@
 import { useFormik } from 'formik';
-import * as Yup from 'yup';
 import validationSchema from './useSchema'
 
 const useShippingFormik = () => {
@@ -15,7 +14,7 @@ const useShippingFormik = () => {
             state: '',
             zipCode: ''
         },
-        validationSchema: validationSchema,
+        validationSchema: validationSchema(),
         onSubmit: (values) => {
             console.log(values);
         },
