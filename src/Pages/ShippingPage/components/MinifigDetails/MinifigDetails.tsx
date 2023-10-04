@@ -1,5 +1,7 @@
-import React, { FC } from 'react';
+import React, {useCallback, FC } from 'react';
 import styled from 'styled-components';
+import {useNavigate} from "react-router-dom";
+
 
 const MinifigDetailsContainer = styled.div`
   flex: 1;
@@ -101,6 +103,12 @@ interface MinifigDetailsProps {
 }
 
 const MinifigDetails: FC<MinifigDetailsProps> = ({ data, minifigImage }) => {
+    const navigate = useNavigate();
+
+    const handleRedirect = useCallback(() => {
+        navigate('/')
+    }, [navigate])
+
     return (
         <MinifigDetailsContainer>
             <Title>Summary</Title>
@@ -113,7 +121,7 @@ const MinifigDetails: FC<MinifigDetailsProps> = ({ data, minifigImage }) => {
                     </PartItem>
                 ))}
             </PartsList>
-            <SubmitButton type="submit">Submit</SubmitButton>
+            <SubmitButton type="submit" onClick={handleRedirect}>Submit</SubmitButton>
         </MinifigDetailsContainer>
     );
 };
